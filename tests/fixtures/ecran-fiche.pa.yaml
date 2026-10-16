@@ -1,0 +1,275 @@
+Screens:
+  Fiche Compte:
+    Properties:
+      ContentLanguage: ="Cette page permet de modifier un compte"
+      Fill: =RGBA(80, 80, 80, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =UpdateContext({locMenuReduit : false});
+        Clear(colResultats);
+    Children:
+      - conMain:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderStyle: =BorderStyle.None
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(0, 72, 75, 1)
+            Height: =Parent.Height
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =35
+            RadiusBottomRight: =35
+            RadiusTopLeft: =35
+            RadiusTopRight: =35
+            Width: =Parent.Width
+          Children:
+            - conMenu:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =20
+                  LayoutMinWidth: =125
+                  RadiusBottomLeft: =030
+                  RadiusTopLeft: =030
+                  Width: |-
+                    =If(
+                        locMenuReduit,
+                        100,
+                        200
+                    )
+                Children:
+                  - btnMenuReduire:
+                      Control: ModernButton@1.0.0
+                      Properties:
+                        BasePaletteColor: =RGBA(0, 72, 75, 1)
+                        FontWeight: =""
+                        Height: =45
+                        Icon: ="AppsList"
+                        IconStyle: =IconStyle.Filled
+                        Layout: =ButtonLayout.IconOnly
+                        OnSelect: =UpdateContext({locMenuReduit:!locMenuReduit})
+                        Width: =Parent.Width - 10
+                  - galMenu:
+                      Control: Gallery@2.15.0
+                      Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                      Properties:
+                        Items: =colMenu
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =Parent.Width
+                        ShowScrollbar: =false
+                        TemplateSize: =62
+                      Children:
+                        - btnMenuElement:
+                            Control: Classic/Button@2.2.0
+                            Properties:
+                              Color: =If(ThisItem.Destination = App.ActiveScreen, Color.Black, Color.White)
+                              Fill: =If(ThisItem.Destination = App.ActiveScreen, Color.White, Color.Transparent)
+                              Font: =Font.'Open Sans'
+                              HoverBorderColor: =
+                              OnSelect: =Navigate(ThisItem.Destination, ScreenTransition.Fade)
+                              Text: =ThisItem.Titre
+                              Width: =Parent.Width / 1.1
+            - conPage:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.Semilight
+                  Fill: =RGBA(255, 255, 255, 1)
+                  FillPortions: =10
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =10
+                  PaddingLeft: =25
+                  PaddingRight: =25
+                  RadiusBottomLeft: =30
+                  RadiusBottomRight: =30
+                  RadiusTopLeft: =30
+                  RadiusTopRight: =30
+                Children:
+                  - lblTitre:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        FontWeight: =FontWeight.Semibold
+                        Height: =35
+                        Size: =18
+                        Text: ="Fiche compte"
+                  - conFiltres:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =50
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                      Children:
+                        - txtRecherche:
+                            Control: ModernTextInput@1.1.2
+                            Properties:
+                              Appearance: =Appearance.Outline
+                              Placeholder: ="Rechercher ici !"
+                              TriggerOutput: =TriggerOutput.FocusOut
+                              Type: ='TextInputCanvas.Type'.Search
+                              Width: =240
+                        - cmbAnnee:
+                            Control: ModernCombobox@1.1.2
+                            Properties:
+                              DefaultSelectedItems: =[Year(Now())]
+                              InputTextPlaceholder: ="Chercher une année"
+                              ItemDisplayText: =ThisItem.Value
+                              Items: |-
+                                =Sequence(
+                                 // nombre d'années dynamique
+                                 (Year(Now()) -
+                                 // une de moins que l'année de départ
+                                 2017),
+                                 // année de départ
+                                 2018
+                                )
+                              OnChange: =Select(btnFiltrer)
+                              SelectMultiple: =false
+                        - btnFiltrer:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              OnSelect: |-
+                                =ClearCollect(
+                                    colResultats,
+                                    Filter(
+                                        [@Résultats],
+                                        Or(
+                                            IsBlank(cmbAnnee.Selected.Value),
+                                            Année = cmbAnnee.Selected.Value
+                                        )
+                                    )
+                                )
+                              Text: ="Filtrer"
+                              Visible: =false
+                  - frmCompte:
+                      Control: Form@2.4.4
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Comptes
+                        DefaultMode: =If(gblMode = "Nouveau",FormMode.New,FormMode.Edit)
+                        Item: =If(gblMode = "Nouveau", Blank(), LookUp(Comptes, Compte = gblCompte.Compte))
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        OnSuccess: |-
+                          =Notify("Compte enregistré", NotificationType.Success);
+                          ResetForm(frmCompte);
+                          Back(ScreenTransition.Cover)
+                      Children:
+                        - dcNom:
+                            Control: TypedDataCard@1.0.7
+                            Variant: TextualEdit
+                            Properties:
+                              DataField: ="name"
+                              Default: =ThisItem.'Nom du compte'
+                              DisplayName: =DataSourceInfo([@Comptes],DataSourceInfo.DisplayName,'Nom du compte')
+                              MaxLength: =DataSourceInfo([@Comptes], DataSourceInfo.MaxLength, 'Nom du compte')
+                              Required: =true
+                              Update: =txtNom.Value
+                              Width: =388
+                              X: =0
+                              Y: =0
+                            Children:
+                              - lblNomTitre:
+                                  Control: ModernText@1.0.0
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =22
+                                    Text: =Parent.DisplayName
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =10
+                              - txtNom:
+                                  Control: ModernTextInput@1.1.2
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    DisplayMode: =Parent.DisplayMode
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =lblNomTitre.Y + lblNomTitre.Height + 4
+                              - lblNomErreur:
+                                  Control: ModernText@1.0.0
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Text: =Parent.Error
+                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                                    X: =24
+                                    Y: =txtNom.Y + txtNom.Height
+                        - dcContact:
+                            Control: TypedDataCard@1.0.7
+                            Variant: TextualEdit
+                            Properties:
+                              DataField: =""
+                              Default: =frmCompte.Item.'Contact principal'.'Nom complet'
+                              DisplayName: ="Nom et prénom du contact"
+                              MaxLength: =DataSourceInfo(%DATACARD_DATASOURCE_NAME.ID%, %DataSourceInfo.RESERVED%.MaxLength, '%DATACARD_FIELD_NAME.ID%')
+                              Required: =false
+                              Update: =%FieldValue.ID%.Value
+                              Width: =388
+                              X: =0
+                              Y: =1
+                            Children:
+                              - lblContactTitre:
+                                  Control: ModernText@1.0.0
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Text: =Parent.DisplayName
+                                    X: =24
+                                    Y: =10
+                              - txtContact:
+                                  Control: ModernTextInput@1.1.2
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =36
+                  - conActions:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =70
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =25
+                        LayoutJustifyContent: =LayoutJustifyContent.End
+                      Children:
+                        - avtUtilisateur:
+                            Control: ModernAvatar@1.1.0
+                            Properties:
+                              FontWeight: =""
+                        - btnAnnuler:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              Appearance: =ButtonAppearance.Outline
+                              Icon: ="ArrowUndo"
+                              OnSelect: |-
+                                =ResetForm(frmCompte);
+                                Back(ScreenTransition.Cover)
+                              Text: ="Annuler"
+                        - btnEnregistrer:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              DisplayMode: |-
+                                =If(
+                                    Or(
+                                        IsBlank(txtNom.Value),
+                                        IsBlank(txtContact.Value)
+                                    ),
+                                    DisplayMode.Disabled,
+                                    DisplayMode.Edit
+                                )
+                              Icon: ="Save"
+                              OnSelect: =SubmitForm(frmCompte)
+                              Text: ="Enregistrer"

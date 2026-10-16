@@ -1,0 +1,142 @@
+ComponentDefinitions:
+  Modal:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      Description:
+        PropertyKind: Input
+        DisplayName: Description
+        Description: Propriété personnalisée
+        DataType: Text
+        Default: ="Texte"
+      Message:
+        PropertyKind: Input
+        DisplayName: Message
+        Description: Propriété personnalisée
+        DataType: Text
+        Default: ="Texte"
+      OnCancel:
+        PropertyKind: Event
+        DisplayName: OnCancel
+        Description: Propriété personnalisée
+        ReturnType: None
+        Default: =
+      OnConfirm:
+        PropertyKind: Event
+        DisplayName: OnConfirm
+        Description: Propriété personnalisée
+        ReturnType: None
+        Default: =
+      Title:
+        PropertyKind: Input
+        DisplayName: Title
+        Description: Propriété personnalisée
+        DataType: Text
+        Default: ="Texte"
+    Children:
+      - con_Modal:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            Fill: =RGBA(255, 255, 255, 0.5)
+            Height: =Parent.Height
+            Width: =Parent.Width
+          Children:
+            - con_ModalContent:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.ExtraBold
+                  Fill: =RGBA(255, 255, 255, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =20
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  PaddingBottom: =8
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  PaddingTop: =8
+                  RadiusBottomLeft: =8
+                  RadiusBottomRight: =8
+                  RadiusTopLeft: =8
+                  RadiusTopRight: =8
+                  Width: =550
+                  X: =Parent.Width/2 - Self.Width/2
+                  Y: =Parent.Height/2 - Self.Height/2
+                Children:
+                  - con_ModalTitle:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =35
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                      Children:
+                        - ico_ModalTitle:
+                            Control: Icon@0.0.7
+                            Properties:
+                              Icon: ="Warning"
+                              IconColor: =RGBA(224, 86, 6, 1)
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                        - lbl_ModalTitle:
+                            Control: Text@0.0.51
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              FillPortions: =1
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                              PaddingLeft: =8
+                              PaddingRight: =8
+                              Size: =15
+                              Text: =Modal.Title
+                              VerticalAlign: =VerticalAlign.Middle
+                              Weight: ='TextCanvas.Weight'.Semibold
+                  - lbl_ModalDescription:
+                      Control: Text@0.0.51
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        FillPortions: =1
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingLeft: =8
+                        PaddingRight: =8
+                        Text: =Modal.Message
+                  - con_ModalCommands:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =50
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =100
+                        LayoutJustifyContent: =LayoutJustifyContent.Center
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingBottom: =8
+                        PaddingLeft: =8
+                        PaddingRight: =8
+                        PaddingTop: =8
+                      Children:
+                        - btn_ModalCancel:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =RGBA(249, 83, 109, 1)
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                              OnSelect: =Modal.OnCancel()
+                              Text: ="Annuler"
+                        - btn_ModalConfirm:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =RGBA(8, 222, 8, 1)
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                              OnSelect: =Modal.OnConfirm()
+                              Text: ="Continuer"

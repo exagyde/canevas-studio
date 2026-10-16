@@ -1,0 +1,197 @@
+/* ------------------------------------------------------------------ Visite guidée */
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 950; /* au-dessus des boîtes de dialogue (900) */
+}
+.tour-dim,
+.tour-spot {
+  position: fixed;
+  pointer-events: none;
+}
+/* le reste de la page est assombri, l'élément mis en évidence reste visible et encadré */
+.tour-dim {
+  background: rgba(0, 0, 0, 0.45);
+}
+.tour-spot {
+  border-radius: var(--radius);
+  box-shadow: 0 0 0 3px var(--accent);
+}
+.tour-card {
+  position: fixed;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  padding: 14px 16px 12px;
+  border-radius: var(--radius-l);
+  background: var(--bg);
+  box-shadow: var(--shadow-28);
+  animation: pop-in 0.14s ease-out;
+}
+.tour-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+.tour-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.tour-card h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  line-height: 22px;
+}
+.tour-card p {
+  margin: 0 0 12px;
+  color: var(--fg-2);
+  line-height: 1.5;
+}
+.tour-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tour-dots {
+  display: flex;
+  gap: 4px;
+}
+.tour-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.tour-dots span.on {
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ Guide */
+.guide {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  min-height: 320px;
+}
+.guide-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+}
+.guide-topic {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg-2);
+  text-align: left;
+  cursor: pointer;
+}
+.guide-topic:hover {
+  background: var(--bg-hover);
+}
+.guide-topic.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.guide-content h3 {
+  margin: 4px 0 12px;
+  font-size: 16px;
+}
+.guide-list {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.guide-list li + li {
+  margin-top: 10px;
+}
+.guide-list code {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.guide-keys {
+  width: 100%;
+  border-collapse: collapse;
+}
+.guide-keys td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.guide-keys td:first-child {
+  width: 46%;
+  white-space: nowrap;
+}
+.guide-keys-note {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+/* ------------------------------------------------------------------ Accueil du premier lancement */
+.welcome-intro {
+  margin: 0 0 16px;
+  color: var(--fg-2);
+}
+.welcome-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.welcome-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.welcome-icon {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.welcome-num {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 18px;
+  height: 18px;
+  border: 2px solid var(--bg);
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+.welcome-text {
+  display: block;
+  margin-top: 2px;
+  color: var(--fg-2);
+}
+
+/* ------------------------------------------------------------------ Bouton d'aide de l'accueil */
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}

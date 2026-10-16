@@ -1,0 +1,341 @@
+Screens:
+  EcranDemandes:
+    Properties:
+      OnVisible: |-
+        =UpdateContext(
+            {
+                ModeleSelectionne: Blank(),
+                AfficherAutres: false,
+                AfficherConfirmation: false
+            }
+        );
+        ClearCollect(
+            colVariables,
+            []
+        )
+    Children:
+      - btnCalculs:
+          Control: Button@0.0.45
+          Properties:
+            OnSelect: |-
+              =ClearCollect(
+                  colVariables,
+                  {
+                      Key: "ClientNom",
+                      Value: If(
+                          !IsBlank(Dossier),
+                          AsType(
+                              Dossier.Client,
+                              Contacts
+                          ).'Nom complet',
+                          ""
+                      )
+                  },
+                  {
+                      Key: "NombreDemandes",
+                      Value: Text(
+                          CountRows(
+                              Filter(
+                                  Demandes As DE,
+                                  DE.Client = Dossier.Client And DE.'🚨 Prioritaire 🚨' = '🚨 Prioritaire 🚨 (Demandes)'.Oui
+                              )
+                          )
+                      )
+                  }
+              );
+              /*ancienne version ;
+              Set(Total; 1);;*/Set(
+                  Chargement,
+                  false
+              )
+            Visible: =false
+            X: =40
+            Y: =40
+      - timChargement:
+          Control: Timer@2.1.0
+          Properties:
+            AutoStart: =true
+            Duration: =1000
+            OnTimerEnd: |-
+              =Set(
+                  Dossier,
+                  LookUp(
+                      Dossiers As DO,
+                      DO.Dossier = GUID(First([@ModelDrivenFormIntegration].Data).ItemId)
+                  )
+              );
+              Select(btnCalculs)
+            Visible: =false
+      - conPrincipal:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height
+            LayoutDirection: =LayoutDirection.Horizontal
+            Width: =Parent.Width
+          Children:
+            - conListe:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(174, 208, 221, 0.2)
+                  FillPortions: =0
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =10
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  PaddingBottom: =10
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =!AfficherAutres
+                  Width: =Max(250, Parent.Width / 4)
+                Children:
+                  - galModeles:
+                      Control: Gallery@2.15.0
+                      Variant: Vertical
+                      Properties:
+                        AlignInContainer: =AlignInContainer.SetByContainer
+                        Default: =First(Self.AllItems)
+                        Items: |-
+                          =Filter(
+                              [
+                                  If(
+                                      Dossier.Priorité = 'Priorité (Dossiers)'.Haute,
+                                      LookUp(
+                                          Modèles As MO,
+                                          MO.Titre = "Urgent"
+                                      )
+                                  ),
+                                  If(
+                                      Dossier.'Présence d''une pièce jointe',
+                                      LookUp(
+                                          Modèles As MO,
+                                          MO.Titre = "Standard"
+                                      )
+                                  )
+                              ] As MOS,
+                              !IsBlank(MOS)
+                          )
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =100
+                        OnSelect: |-
+                          =Set(
+                              ModeleSelectionne,
+                              ThisItem
+                          );
+                          UpdateContext({ AfficherConfirmation: true })
+                        TemplatePadding: =20
+                        TemplateSize: =65
+                        Width: =Parent.Width
+                      Children:
+                        - conModele:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.Regular
+                              Fill: =RGBA(255, 255, 255, 1)
+                              Height: =Parent.TemplateHeight
+                              LayoutAlignItems: =LayoutAlignItems.Center
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              PaddingLeft: =20
+                              Width: =Parent.Width - Parent.TemplatePadding*2.5
+                            Children:
+                              - lblModele:
+                                  Control: Text@0.0.51
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    AutoHeight: =true
+                                    FillPortions: =1
+                                    FontColor: =If(ThisItem.Titre = ModeleSelectionne.Titre, RGBA(0,0,0,1), RGBA(0,0,0,0.5))
+                                    Size: =16
+                                    Text: =First(Split(Substitute(ThisItem.Titre, "MOD - ", ""), "-")).Value
+                                    VerticalAlign: =VerticalAlign.Middle
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Wrap: =false
+                              - icoModele:
+                                  Control: Icon@0.0.7
+                                  Properties:
+                                    Height: =Parent.Height - Parent.PaddingTop*2
+                                    Icon: ="ChevronRight"
+                                    IconStyle: ='Icon.IconStyle'.Outline
+                                    Width: =Parent.Height - Parent.PaddingTop*2
+                        - shpModele:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              Fill: =Color.Transparent
+                              Height: =Parent.TemplateHeight
+                              OnSelect: =Select(Parent)
+                              Width: =Parent.TemplateWidth
+                  - shpSeparateur:
+                      Control: Rectangle@2.3.0
+                      Properties:
+                        Height: =1
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        Width: =Parent.Width - 40
+                  - conAutres:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =conAutresCarte.Height + Self.PaddingTop*2
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingBottom: =20
+                        PaddingLeft: =20
+                        PaddingRight: =20
+                        PaddingTop: =20
+                      Children:
+                        - conAutresPrincipal:
+                            Control: GroupContainer@1.5.0
+                            Variant: ManualLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutMinHeight: =conAutresCarte.Height
+                              LayoutMinWidth: =16
+                            Children:
+                              - conAutresCarte:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.Regular
+                                    Fill: =RGBA(255, 255, 255, 1)
+                                    Height: =65
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    PaddingLeft: =20
+                                    Width: =Parent.Width
+                                  Children:
+                                    - lblAutres:
+                                        Control: Text@0.0.51
+                                        Properties:
+                                          FillPortions: =1
+                                          Size: =16
+                                          Text: ="Autres modèles"
+                                          VerticalAlign: =VerticalAlign.Middle
+                                          Weight: ='TextCanvas.Weight'.Semibold
+                                    - icoAutres:
+                                        Control: Icon@0.0.7
+                                        Properties:
+                                          Icon: ="ChevronRight"
+                                          IconColor: =RGBA(0, 81, 100, 1)
+                              - shpAutres:
+                                  Control: Rectangle@2.3.0
+                                  Properties:
+                                    Fill: =Color.Transparent
+                                    Height: =conAutresCarte.Height
+                                    OnSelect: |-
+                                      =UpdateContext({ AfficherAutres: true })
+                                    Width: =conAutresCarte.Width
+                  - btnRafraichir:
+                      Control: Button@0.0.45
+                      Properties:
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        OnSelect: |-
+                          =Set(ModeleSelectionne, Blank());
+                          UpdateContext({ AfficherAutres: false, AfficherConfirmation: false });
+                          Refresh('Messages électroniques')
+                        Text: ="Rafraîchir"
+            - conDetails:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                Children:
+                  - conEnTete:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =60
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =10
+                        LayoutMinHeight: |+
+                          =10
+                        Visible: =!IsBlank(ModeleSelectionne) && (!IsBlank(Dossier) || !IsBlank(colVariables))
+                      Children:
+                        - drpContact:
+                            Control: DropDown@0.0.45
+                            Properties:
+                              DefaultSelectedItems: =[First(Contacts)]
+                              Items: =Contacts
+                              OnChange: =UpdateContext({ContactSelectionne:Self.Selected})
+                              Width: =260
+                            Children:
+                              - Nom complet1:
+                                  Control: DropDownDataField@1.5.0
+                                  Variant: textualColumn
+                                  IsLocked: true
+                                  Properties:
+                                    FieldDisplayName: ="Nom complet"
+                                    FieldName: ="fullname"
+                                    FieldType: ="s"
+                                    Order: =2
+                        - togUrgent:
+                            Control: Toggle@1.1.5
+                            Properties:
+                              Checked: =DossierEnCours.Urgent
+                              DisplayMode: |-
+                                =If(
+                                    IsBlank(
+                                        LookUp(
+                                            'Messages électroniques' As ME,
+                                            ME.Concernant = Dossier.Dossier And ME.'Statut d''activité' = 'Statut d''activité'.Ouvert
+                                        )
+                                    ),
+                                    DisplayMode.Edit,
+                                    DisplayMode.Disabled
+                                )
+                              Label: ="Urgent"
+                              OnSelect: |-
+                                =Patch(
+                                    Dossiers,
+                                    Dossier,
+                                    {Urgent: Self.Checked}
+                                )
+                  - htmApercu:
+                      Control: HtmlViewer@2.1.0
+                      Properties:
+                        HtmlText: =If(!IsBlank(ModeleSelectionne), ModeleSelectionne.Corps, "")
+                        Width: =Parent.Width - 20
+                  - lblAucuneDemande:
+                      Control: Text@0.0.51
+                      Properties:
+                        Text: ="Aucune demande sélectionnée"
+                        Visible: =IsBlank(ModeleSelectionne)
+      - cmpConfirmation:
+          Control: CanvasComponent
+          ComponentName: Modal
+          Properties:
+            Height: =Parent.Height
+            Message: ="Confirmer l'envoi de la demande ?"
+            OnCancel: |-
+              =UpdateContext({ AfficherConfirmation: false })
+            OnConfirm: |-
+              =Patch(
+                  Tâches,
+                  Defaults(Tâches),
+                  {
+                      Sujet: "Relancer le client",
+                      Priorité: 'Priorité (Tâches)'.Normale,
+                      Concernant: Dossier
+                  }
+              );
+              UpdateContext({ AfficherConfirmation: false })
+            Visible: =AfficherConfirmation
+            Width: =Parent.Width

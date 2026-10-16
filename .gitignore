@@ -1,0 +1,24 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+.open-next/
+.wrangler/
+
+# Local environment (API keys, secrets)
+.env
+.env*.local
+.dev.vars
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Local tooling
+.claude/
+
+# Local sample files kept at the repository root (Power Apps exports, screenshots)
+/*.yml
+/*.yaml
+/*.png
