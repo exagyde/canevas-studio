@@ -9,7 +9,10 @@
     "dev": "next dev -p 3210",
     "build": "next build",
     "start": "next start -p 3210",
-    "test": "node --test \"tests/**/*.test.js\""
+    "test": "node --test \"tests/**/*.test.js\"",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
@@ -19,11 +22,15 @@
     "@codemirror/search": "6.7.2",
     "@codemirror/state": "6.7.6",
     "@codemirror/view": "6.43.14",
+    "@opennextjs/cloudflare": "1.20.12",
     "jszip": "3.10.2",
-    "next": "16.4.0",
+    "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "yaml": "2.9.1"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "wrangler": "4.151.1"
+  }
 }

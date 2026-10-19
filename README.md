@@ -131,8 +131,34 @@ The language of the **emulated app** (`Language()`, `Text()` formats, month name
 ## Privacy and security
 
 - Projects live in your browser (IndexedDB). Export them as ZIP files to back them up or share them.
-- API keys and Dataverse credentials are stored in this browser's `localStorage` and only sent to the local Next.js server, which calls the provider you chose. Canevas Studio is designed to **run locally**: if you host it, anyone using your instance sends their keys through your server.
+- API keys and Dataverse credentials are stored in this browser's `localStorage` and only sent to the Canevas Studio server (local or your own deployment), which calls the provider you chose. If you host an instance, its users send their keys through your server.
 - The app is desktop-only: on phones, touch tablets, in portrait mode or in a window smaller than 1024 × 500 pixels, a message replaces the editor (your work is kept).
+
+## Deploying to Cloudflare Workers
+
+Canevas Studio runs on [Cloudflare Workers](https://developers.cloudflare.com/workers/) with the [OpenNext adapter](https://opennext.js.org/cloudflare). The configuration is in `wrangler.jsonc` (Worker name, `nodejs_compat` flag) and `open-next.config.ts`; no cache or storage binding is needed because every page is rendered on demand.
+
+Test the production build locally in the Workers runtime (<http://localhost:8787>):
+
+```bash
+npm run preview
+```
+
+Deploy from your computer:
+
+```bash
+npx wrangler login
+```
+
+```bash
+npm run deploy
+```
+
+The app is then available at `https://canevas-studio.<your-subdomain>.workers.dev`. You can also connect the GitHub repository in the Cloudflare dashboard (**Workers & Pages › Create › Import a repository**) and set the deploy command to `npm run deploy`, so that every push to `main` is deployed.
+
+- **Plan**: the Workers Free plan allows 10 ms of CPU time per request, which server rendering may exceed. If you get “Worker exceeded CPU time limit” errors, switch to Workers Paid.
+- **Server-side API keys**: do not add provider keys (`ANTHROPIC_API_KEY`…) as secrets on a public instance — anyone could use them through `/api/ai`. If you need them, restrict access to the Worker with [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/).
+- **Windows**: OpenNext recommends building from WSL; builds from Windows work but are not officially supported.
 
 ## Project structure
 

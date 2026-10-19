@@ -1,0 +1,22 @@
+// Déploiement sur Cloudflare Workers avec l'adaptateur OpenNext (npm run preview / npm run deploy)
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "canevas-studio",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-10-12",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			// liaison du Worker vers lui-même, utilisée par l'adaptateur : le service doit porter le nom du Worker
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "canevas-studio"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}
